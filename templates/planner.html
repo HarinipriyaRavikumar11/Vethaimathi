@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('language', 'ta') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% if session.get('language', 'ta') == 'en' %}
+            Vethaimathi - Smart Agriculture Planner
+        {% else %}
+            விதைமதி - ஸ்மார்ட் விவசாய திட்டமிடல்
+        {% endif %}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(255, 235, 120, 0.9), transparent 25%),
+                linear-gradient(135deg, #b8f2e6, #d8f3dc 35%, #a8dadc 70%, #90be6d);
+            color: #183b2a;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 25px 15px 45px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 38px;
+            color: #176b3a;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #315f45;
+        }
+
+        .planner-card {
+            background: rgba(255,255,255,0.94);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 12px 35px rgba(30, 90, 50, 0.16);
+            margin-bottom: 25px;
+        }
+
+        .planner-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #176b3a;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #245c3d;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #b7d9c1;
+            border-radius: 13px;
+            font-size: 15px;
+            background: #f9fffa;
+            color: #214b32;
+            outline: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: #2d9b57;
+            box-shadow: 0 0 0 3px rgba(45,155,87,0.12);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .submit-btn {
+            width: 100%;
+            border: none;
+            padding: 15px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #1f8f4d, #49b96d);
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(31,143,77,0.25);
+        }
+
+        .weather-card {
+            background: linear-gradient(135deg, #e8f8ff, #f4fff8);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+            border: 1px solid #c9e8d2;
+        }
+
+        .weather-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #176b3a;
+            margin-bottom: 15px;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .weather-item {
+            background: white;
+            padding: 16px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .weather-item span {
+            display: block;
+            font-size: 13px;
+            color: #597060;
+            margin-bottom: 7px;
+        }
+
+        .weather-item strong {
+            font-size: 20px;
+            color: #176b3a;
+        }
+
+        .best-match {
+            background: linear-gradient(135deg, #fff4b8, #fffde7);
+            border: 2px solid #f1d65b;
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .best-match h3 {
+            margin-top: 0;
+            color: #806700;
+            font-size: 22px;
+        }
+
+        .best-crop {
+            font-size: 27px;
+            font-weight: 800;
+            color: #176b3a;
+            margin: 8px 0;
+        }
+
+        .results-title {
+            text-align: center;
+            font-size: 27px;
+            font-weight: 700;
+            color: #176b3a;
+            margin: 30px 0 20px;
+        }
+
+        .crop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .crop-card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 8px 25px rgba(30,90,50,0.12);
+            border: 1px solid #d6ead9;
+        }
+
+        .crop-card.best {
+            border: 2px solid #f0ca38;
+            background: linear-gradient(135deg, #fffdf0, #ffffff);
+        }
+
+        .crop-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: #176b3a;
+            margin-bottom: 12px;
+        }
+
+        .score {
+            display: inline-block;
+            background: #e3f6e9;
+            color: #176b3a;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .crop-info {
+            margin: 9px 0;
+            font-size: 15px;
+            color: #385743;
+        }
+
+        .crop-info strong {
+            color: #1d5635;
+        }
+
+        .reason {
+            margin-top: 15px;
+            padding: 13px;
+            background: #f2faf4;
+            border-radius: 12px;
+            line-height: 1.6;
+            color: #36563f;
+        }
+
+        .no-result {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            text-align: center;
+            color: #765f25;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .back-btn {
+            display: block;
+            width: fit-content;
+            margin: 30px auto 0;
+            text-decoration: none;
+            background: #176b3a;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .back-btn:hover {
+            background: #0e512b;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid,
+            .crop-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weather-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .planner-card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 30px;
+            }
+
+            .planner-title {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+
+        <h1>🌱 விதைமதி</h1>
+
+        <p>
+            {% if session.get('language', 'ta') == 'en' %}
+                Smart Agriculture Planner
+            {% else %}
+                ஸ்மார்ட் விவசாய திட்டமிடல்
+            {% endif %}
+        </p>
+
+    </div>
+
+
+    <!-- PLANNER FORM -->
+    <div class="planner-card">
+
+        <div class="planner-title">
+
+            {% if session.get('language', 'ta') == 'en' %}
+                🌱 Crop Recommendation
+            {% else %}
+                🌱 பயிர் பரிந்துரை
+            {% endif %}
+
+        </div>
+
+
+        <form method="POST" action="/planner">
+
+            <div class="form-grid">
+
+                <!-- SOIL -->
+                <div class="form-group">
+
+                    <label>
+                        {% if session.get('language', 'ta') == 'en' %}
+                            🌾 Soil Type
+                        {% else %}
+                            🌾 மண் வகை
+                        {% endif %}
+                    </label>
+
+                    <select name="soil" required>
+
+                        {% if session.get('language', 'ta') == 'en' %}
+
+                            <option value="">Select Soil Type</option>
+                            <option value="red">Red Soil</option>
+                            <option value="black">Black Soil</option>
+                            <option value="alluvial">Alluvial Soil</option>
+                            <option value="sandy">Sandy Soil</option>
+                            <option value="clay">Clay Soil</option>
+
+                        {% else %}
+
+                            <option value="">மண் வகையைத் தேர்ந்தெடுக்கவும்</option>
+                            <option value="red">செம்மண்</option>
+                            <option value="black">கரிசல் மண்</option>
+                            <option value="alluvial">வண்டல் மண்</option>
+                            <option value="sandy">மணல் மண்</option>
+                            <option value="clay">களிமண்</option>
+
+                        {% endif %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- WATER -->
+                <div class="form-group">
+
+                    <label>
+                        {% if session.get('language', 'ta') == 'en' %}
+                            💧 Water Source
+                        {% else %}
+                            💧 நீர் ஆதாரம்
+                        {% endif %}
+                    </label>
+
+                    <select name="water" required>
+
+                        {% if session.get('language', 'ta') == 'en' %}
+
+                            <option value="">Select Water Source</option>
+                            <option value="rain">Rain Water</option>
+                            <option value="well">Well</option>
+                            <option value="borewell">Borewell</option>
+                            <option value="canal">Canal</option>
+                            <option value="river">River</option>
+
+                        {% else %}
+
+                            <option value="">நீர் ஆதாரத்தைத் தேர்ந்தெடுக்கவும்</option>
+                            <option value="rain">மழைநீர்</option>
+                            <option value="well">கிணறு</option>
+                            <option value="borewell">ஆழ்துளைக் கிணறு</option>
+                            <option value="canal">கால்வாய்</option>
+                            <option value="river">ஆறு</option>
+
+                        {% endif %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- DISTRICT / REGION -->
+                <div class="form-group full-width">
+
+                    <label>
+                        {% if session.get('language', 'ta') == 'en' %}
+                            📍 Region / District
+                        {% else %}
+                            📍 பகுதி / மாவட்டம்
+                        {% endif %}
+                    </label>
+
+                    <select name="region" required>
+
+                        {% if session.get('language', 'ta') == 'en' %}
+
+                            <option value="">Select Region / District</option>
+
+                            <option value="cuddalore">Cuddalore</option>
+                            <option value="villupuram">Villupuram</option>
+                            <option value="chennai">Chennai</option>
+                            <option value="pondicherry">Puducherry</option>
+                            <option value="other">Other</option>
+
+                        {% else %}
+
+                            <option value="">பகுதி / மாவட்டத்தைத் தேர்ந்தெடுக்கவும்</option>
+
+                            <option value="cuddalore">கடலூர்</option>
+                            <option value="villupuram">விழுப்புரம்</option>
+                            <option value="chennai">சென்னை</option>
+                            <option value="pondicherry">புதுச்சேரி</option>
+                            <option value="other">மற்றவை</option>
+
+                        {% endif %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+                <div class="full-width">
+
+                    <button type="submit" class="submit-btn">
+
+                        {% if session.get('language', 'ta') == 'en' %}
+                            🌱 Get Crop Recommendation
+                        {% else %}
+                            🌱 பயிர் பரிந்துரையைப் பெறுக
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    {% if crops and weather_available %}
+
+    <!-- WEATHER -->
+    <div class="weather-card">
+
+        <div class="weather-title">
+
+            {% if session.get('language', 'ta') == 'en' %}
+                🌤️ Live Weather Summary
+            {% else %}
+                🌤️ தற்போதைய வானிலை
+            {% endif %}
+
+        </div>
+
+        <div class="weather-grid">
+
+            <div class="weather-item">
+
+                <span>
+                    {% if session.get('language', 'ta') == 'en' %}
+                        Current Temperature
+                    {% else %}
+                        தற்போதைய வெப்பநிலை
+                    {% endif %}
+                </span>
+
+                <strong>{{ temperature }}°C</strong>
+
+            </div>
+
+
+            <div class="weather-item">
+
+                <span>
+                    {% if session.get('language', 'ta') == 'en' %}
+                        Rain Probability
+                    {% else %}
+                        மழை வாய்ப்பு
+                    {% endif %}
+                </span>
+
+                <strong>{{ rain_probability }}%</strong>
+
+            </div>
+
+
+            <div class="weather-item">
+
+                <span>
+                    {% if session.get('language', 'ta') == 'en' %}
+                        Irrigation Advice
+                    {% else %}
+                        நீர் பாசன ஆலோசனை
+                    {% endif %}
+                </span>
+
+                <strong>
+                    {% if irrigation_warning %}
+                        💧
+                    {% else %}
+                        ✅
+                    {% endif %}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    {% if best_match %}
+
+    <!-- BEST MATCH -->
+    <div class="best-match">
+
+        <h3>
+            🌟
+            {% if session.get('language', 'ta') == 'en' %}
+                BEST MATCH
+            {% else %}
+                சிறந்த பொருத்தம்
+            {% endif %}
+        </h3>
+
+        <div class="best-crop">
+
+            {% if best_match == 'Rice' %}
+                {% if session.get('language', 'ta') == 'en' %}Rice{% else %}நெல்{% endif %}
+
+            {% elif best_match == 'Groundnut' %}
+                {% if session.get('language', 'ta') == 'en' %}Groundnut{% else %}நிலக்கடலை{% endif %}
+
+            {% elif best_match == 'Black Gram' %}
+                {% if session.get('language', 'ta') == 'en' %}Black Gram{% else %}உளுந்து{% endif %}
+
+            {% elif best_match == 'Millet' %}
+                {% if session.get('language', 'ta') == 'en' %}Millet{% else %}சிறுதானியம்{% endif %}
+
+            {% elif best_match == 'Cotton' %}
+                {% if session.get('language', 'ta') == 'en' %}Cotton{% else %}பருத்தி{% endif %}
+
+            {% elif best_match == 'Sugarcane' %}
+                {% if session.get('language', 'ta') == 'en' %}Sugarcane{% else %}கரும்பு{% endif %}
+
+            {% elif best_match == 'Banana' %}
+                {% if session.get('language', 'ta') == 'en' %}Banana{% else %}வாழை{% endif %}
+
+            {% elif best_match == 'Watermelon' %}
+                {% if session.get('language', 'ta') == 'en' %}Watermelon{% else %}தர்பூசணி{% endif %}
+
+            {% else %}
+                {{ best_match }}
+            {% endif %}
+
+        </div>
+
+        {% if best_match_reason %}
+        <div class="reason">
+            {{ best_match_reason }}
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- RESULTS -->
+    {% if crops %}
+
+        <div class="results-title">
+
+            {% if session.get('language', 'ta') == 'en' %}
+                🌾 Suggested Crops
+            {% else %}
+                🌾 பரிந்துரைக்கப்படும் பயிர்கள்
+            {% endif %}
+
+        </div>
+
+
+        <div class="crop-grid">
+
+            {% for result in crops %}
+
+            <div class="crop-card {% if result.name == best_match %}best{% endif %}">
+
+                <div class="crop-name">
+
+                    {% if result.name == 'Rice' %}
+                        {% if session.get('language', 'ta') == 'en' %}Rice{% else %}நெல்{% endif %}
+
+                    {% elif result.name == 'Groundnut' %}
+                        {% if session.get('language', 'ta') == 'en' %}Groundnut{% else %}நிலக்கடலை{% endif %}
+
+                    {% elif result.name == 'Black Gram' %}
+                        {% if session.get('language', 'ta') == 'en' %}Black Gram{% else %}உளுந்து{% endif %}
+
+                    {% elif result.name == 'Millet' %}
+                        {% if session.get('language', 'ta') == 'en' %}Millet{% else %}சிறுதானியம்{% endif %}
+
+                    {% elif result.name == 'Cotton' %}
+                        {% if session.get('language', 'ta') == 'en' %}Cotton{% else %}பருத்தி{% endif %}
+
+                    {% elif result.name == 'Sugarcane' %}
+                        {% if session.get('language', 'ta') == 'en' %}Sugarcane{% else %}கரும்பு{% endif %}
+
+                    {% elif result.name == 'Banana' %}
+                        {% if session.get('language', 'ta') == 'en' %}Banana{% else %}வாழை{% endif %}
+
+                    {% elif result.name == 'Watermelon' %}
+                        {% if session.get('language', 'ta') == 'en' %}Watermelon{% else %}தர்பூசணி{% endif %}
+
+                    {% else %}
+                        {{ result.name }}
+                    {% endif %}
+
+                </div>
+
+
+                <div class="score">
+                    {{ result.score }}/80
+                </div>
+
+
+                <div class="crop-info">
+
+                    <strong>
+                        {% if session.get('language', 'ta') == 'en' %}
+                            Weather Suitability:
+                        {% else %}
+                            வானிலை பொருத்தம்:
+                        {% endif %}
+                    </strong>
+
+                    {{ result.weather_score }}
+
+                </div>
+
+
+                <div class="crop-info">
+
+                    <strong>
+                        {% if session.get('language', 'ta') == 'en' %}
+                            Water Requirement:
+                        {% else %}
+                            நீர் தேவை:
+                        {% endif %}
+                    </strong>
+
+                    {% if result.water_requirement == 'High' %}
+
+                        {% if session.get('language', 'ta') == 'en' %}
+                            High
+                        {% else %}
+                            அதிகம்
+                        {% endif %}
+
+                    {% elif result.water_requirement == 'Medium' %}
+
+                        {% if session.get('language', 'ta') == 'en' %}
+                            Medium
+                        {% else %}
+                            நடுத்தரம்
+                        {% endif %}
+
+                    {% else %}
+
+                        {% if session.get('language', 'ta') == 'en' %}
+                            Low to Medium
+                        {% else %}
+                            குறைவு முதல் நடுத்தரம்
+                        {% endif %}
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="crop-info">
+
+                    <strong>
+                        {% if session.get('language', 'ta') == 'en' %}
+                            Growing Duration:
+                        {% else %}
+                            வளர்ச்சி காலம்:
+                        {% endif %}
+                    </strong>
+
+                    {{ result.duration }}
+
+                </div>
+
+
+                {% if result.reason %}
+
+                <div class="reason">
+
+                    <strong>
+                        {% if session.get('language', 'ta') == 'en' %}
+                            Why recommended?
+                        {% else %}
+                            ஏன் பரிந்துரைக்கப்படுகிறது?
+                        {% endif %}
+                    </strong>
+
+                    <br>
+
+                    {{ result.reason }}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% elif request.method == 'POST' %}
+
+        <div class="no-result">
+
+            {% if session.get('language', 'ta') == 'en' %}
+
+                🌱 No suitable crop recommendation found for the selected conditions.
+
+            {% else %}
+
+                🌱 தேர்ந்தெடுக்கப்பட்ட சூழ்நிலைகளுக்கு பொருத்தமான பயிர் பரிந்துரை கிடைக்கவில்லை.
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- BACK -->
+    <a href="/dashboard" class="back-btn">
+
+        {% if session.get('language', 'ta') == 'en' %}
+            ← Back to Home
+        {% else %}
+            ← முகப்புப் பக்கத்திற்குச் செல்லவும்
+        {% endif %}
+
+    </a>
+
+</div>
+</div>
+
+</body>
+</html>

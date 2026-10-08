@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ta">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vethaimathi - Offline Agriculture Guide</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f8f3;
+            color: #23412b;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e7d32, #43a047);
+            color: white;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .header p {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .language-buttons {
+            margin-top: 20px;
+        }
+
+        .language-buttons a {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            padding: 9px 20px;
+            margin: 0 5px;
+            border: 1px solid white;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .language-buttons a:hover {
+            background: white;
+            color: #2e7d32;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .intro {
+            background: white;
+            padding: 22px;
+            border-radius: 18px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        .intro h2 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+
+        .intro p {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .crop-section {
+            margin-bottom: 40px;
+        }
+
+        .crop-section h2 {
+            color: #2e7d32;
+            margin-bottom: 18px;
+        }
+
+        .crop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        /* CLICKABLE CROP CARD */
+
+        .crop-card {
+            display: block;
+            background: white;
+            border-radius: 18px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+            transition: 0.25s;
+            border: 1px solid #e4eee6;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+            border-color: #66bb6a;
+        }
+
+        .crop-card:active {
+            transform: translateY(-2px);
+        }
+
+        .crop-icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .crop-card h3 {
+            margin: 8px 0;
+            color: #2e7d32;
+        }
+
+        .crop-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .click-text {
+            display: inline-block;
+            margin-top: 10px;
+            color: #43a047;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .category {
+            margin-bottom: 38px;
+            scroll-margin-top: 20px;
+        }
+
+        .category h2 {
+            color: #2e7d32;
+            margin-bottom: 18px;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 14px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-left: 5px solid #66bb6a;
+        }
+
+        .tip-card h3 {
+            margin-top: 0;
+            color: #388e3c;
+        }
+
+        .tip-card p {
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 0;
+        }
+
+        .highlight {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .highlight strong {
+            color: #2e7d32;
+        }
+
+        /* BACK TO TOP */
+
+        .back-top {
+            display: block;
+            width: fit-content;
+            margin: 30px auto 10px;
+            padding: 10px 18px;
+            background: #2e7d32;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-top:hover {
+            background: #1b5e20;
+        }
+
+        @media (max-width: 600px) {
+
+            .header h1 {
+                font-size: 25px;
+            }
+
+            .container {
+                padding: 0 14px;
+            }
+
+            .crop-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .crop-card {
+                padding: 18px 10px;
+            }
+
+            .crop-icon {
+                font-size: 34px;
+            }
+
+            .crop-card h3 {
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body id="top">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        {% if language == "en" %}
+
+            <h1>🌱 Offline Agriculture Guide</h1>
+
+            <p>
+                Learn farming step-by-step, even without internet
+            </p>
+
+        {% else %}
+
+            <h1>🌱 இணையமில்லா விவசாய வழிகாட்டி</h1>
+
+            <p>
+                இணையம் இல்லாமலும் விவசாயத்தை படிப்படியாக கற்றுக்கொள்ளுங்கள்
+            </p>
+
+        {% endif %}
+
+
+        <div class="language-buttons">
+
+            <a href="/offline-tips">
+                தமிழ்
+            </a>
+
+            <a href="/offline-tips?lang=en">
+                English
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="container">
+
+
+        <!-- INTRO -->
+
+        <div class="intro">
+
+            {% if language == "en" %}
+
+                <h2>👨‍🌾 Learn Agriculture</h2>
+
+                <p>
+                    This offline guide helps beginners understand
+                    the basic farming process, seasonal crop selection,
+                    crop-wise cultivation and harvest management.
+                </p>
+
+            {% else %}
+
+                <h2>👨‍🌾 விவசாயத்தை கற்றுக்கொள்ளுங்கள்</h2>
+
+                <p>
+                    புதிய விவசாயிகள் விவசாயத்தின் அடிப்படை செயல்முறை,
+                    பருவத்திற்கு ஏற்ற பயிர் தேர்வு மற்றும்
+                    பயிர் வாரியான சாகுபடி முறைகளை புரிந்துகொள்ள
+                    இந்த வழிகாட்டி உதவும்.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- CROP QUICK GUIDE -->
+
+        <div class="crop-section" id="crop-guides">
+
+            {% if language == "en" %}
+
+                <h2>🌾 Crop-wise Quick Guide</h2>
+
+                <div class="crop-grid">
+
+
+                    <!-- PADDY -->
+
+                    <a href="#paddy-guide" class="crop-card">
+
+                        <div class="crop-icon">🌾</div>
+
+                        <h3>Paddy</h3>
+
+                        <p>
+                            Learn the basic stages of paddy cultivation.
+                        </p>
+
+                        <span class="click-text">
+                            View Guide →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- GROUNDNUT -->
+
+                    <a href="#groundnut-guide" class="crop-card">
+
+                        <div class="crop-icon">🥜</div>
+
+                        <h3>Groundnut</h3>
+
+                        <p>
+                            Understand groundnut cultivation from sowing to harvest.
+                        </p>
+
+                        <span class="click-text">
+                            View Guide →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- MILLETS -->
+
+                    <a href="#millets-guide" class="crop-card">
+
+                        <div class="crop-icon">🌿</div>
+
+                        <h3>Millets</h3>
+
+                        <p>
+                            Learn the basic cultivation flow of millets.
+                        </p>
+
+                        <span class="click-text">
+                            View Guide →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- PULSES -->
+
+                    <a href="#pulses-guide" class="crop-card">
+
+                        <div class="crop-icon">🫘</div>
+
+                        <h3>Pulses</h3>
+
+                        <p>
+                            Learn about pulse crop growth and harvesting.
+                        </p>
+
+                        <span class="click-text">
+                            View Guide →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- VEGETABLES -->
+
+                    <a href="#vegetables-guide" class="crop-card">
+
+                        <div class="crop-icon">🥬</div>
+
+                        <h3>Vegetables</h3>
+
+                        <p>
+                            Understand the basic vegetable farming process.
+                        </p>
+
+                        <span class="click-text">
+                            View Guide →
+                        </span>
+
+                    </a>
+
+
+                </div>
+
+
+            {% else %}
+
+                <h2>🌾 பயிர் வாரியான விரைவு வழிகாட்டி</h2>
+
+                <div class="crop-grid">
+
+
+                    <!-- PADDY -->
+
+                    <a href="#paddy-guide" class="crop-card">
+
+                        <div class="crop-icon">🌾</div>
+
+                        <h3>நெல்</h3>
+
+                        <p>
+                            நெல் சாகுபடியின் அடிப்படை நிலைகளை அறிந்து கொள்ளுங்கள்.
+                        </p>
+
+                        <span class="click-text">
+                            வழிகாட்டியை பார்க்க →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- GROUNDNUT -->
+
+                    <a href="#groundnut-guide" class="crop-card">
+
+                        <div class="crop-icon">🥜</div>
+
+                        <h3>நிலக்கடலை</h3>
+
+                        <p>
+                            விதைப்பு முதல் அறுவடை வரை நிலக்கடலை சாகுபடியை அறிந்து கொள்ளுங்கள்.
+                        </p>
+
+                        <span class="click-text">
+                            வழிகாட்டியை பார்க்க →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- MILLETS -->
+
+                    <a href="#millets-guide" class="crop-card">
+
+                        <div class="crop-icon">🌿</div>
+
+                        <h3>சிறுதானியங்கள்</h3>
+
+                        <p>
+                            சிறுதானியங்களின் அடிப்படை சாகுபடி முறையை கற்றுக்கொள்ளுங்கள்.
+                        </p>
+
+                        <span class="click-text">
+                            வழிகாட்டியை பார்க்க →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- PULSES -->
+
+                    <a href="#pulses-guide" class="crop-card">
+
+                        <div class="crop-icon">🫘</div>
+
+                        <h3>பயறு வகைகள்</h3>
+
+                        <p>
+                            பயறு பயிர்களின் வளர்ச்சி மற்றும் அறுவடை முறையை அறிந்து கொள்ளுங்கள்.
+                        </p>
+
+                        <span class="click-text">
+                            வழிகாட்டியை பார்க்க →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- VEGETABLES -->
+
+                    <a href="#vegetables-guide" class="crop-card">
+
+                        <div class="crop-icon">🥬</div>
+
+                        <h3>காய்கறிகள்</h3>
+
+                        <p>
+                            காய்கறி சாகுபடியின் அடிப்படை செயல்முறையை கற்றுக்கொள்ளுங்கள்.
+                        </p>
+
+                        <span class="click-text">
+                            வழிகாட்டியை பார்க்க →
+                        </span>
+
+                    </a>
+
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- IMPORTANT NOTE -->
+
+        <div class="highlight">
+
+            {% if language == "en" %}
+
+                <strong>📍 Important:</strong>
+                Crop seasons and cultivation practices can vary
+                depending on district, soil, rainfall and irrigation conditions.
+
+            {% else %}
+
+                <strong>📍 முக்கிய குறிப்பு:</strong>
+                பயிர்களின் பருவம் மற்றும் சாகுபடி முறைகள்
+                மாவட்டம், மண், மழை மற்றும் பாசன வசதியைப் பொறுத்து மாறுபடலாம்.
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- ALL GUIDES -->
+
+        {% if language == "en" %}
+
+            {% set crop_ids = {
+                "🌾 Paddy Cultivation Guide": "paddy-guide",
+                "🥜 Groundnut Cultivation Guide": "groundnut-guide",
+                "🌿 Millets — Pearl Millet / Finger Millet / Sorghum": "millets-guide",
+                "🫘 Pulses — Black Gram / Green Gram / Red Gram": "pulses-guide",
+                "🥬 Vegetable Cultivation Guide": "vegetables-guide"
+            } %}
+
+        {% else %}
+
+            {% set crop_ids = {
+                "🌾 நெல் சாகுபடி வழிகாட்டி": "paddy-guide",
+                "🥜 நிலக்கடலை சாகுபடி வழிகாட்டி": "groundnut-guide",
+                "🌿 சிறுதானியங்கள் — கம்பு / கேழ்வரகு / சோளம்": "millets-guide",
+                "🫘 பயறு வகைகள் — உளுந்து / பாசிப்பயறு / துவரை": "pulses-guide",
+                "🥬 காய்கறி சாகுபடி வழிகாட்டி": "vegetables-guide"
+            } %}
+
+        {% endif %}
+
+
+
+        {% for category, tips in offline_tips.items() %}
+
+            <div
+                class="category"
+                {% if category in crop_ids %}
+                    id="{{ crop_ids[category] }}"
+                {% endif %}
+            >
+
+                <h2>🌿 {{ category }}</h2>
+
+
+                {% for tip in tips %}
+
+                    <div class="tip-card">
+
+                        <h3>{{ tip.title }}</h3>
+
+                        <p>{{ tip.content }}</p>
+
+                    </div>
+
+                {% endfor %}
+
+
+                {% if category in crop_ids %}
+
+                    <a href="#top" class="back-top">
+                        {% if language == "en" %}
+                            ↑ Back to top
+                        {% else %}
+                            ↑ மேலே செல்ல
+                        {% endif %}
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+        {% endfor %}
+
+
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Choose Language | Vethaimathi</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="language-page">
+
+    <div class="language-card">
+
+        <h1>🌱 Vethaimathi</h1>
+
+        <h2>AI Smart Farming Assistant</h2>
+
+        <p>Select Your Preferred Language</p>
+
+        <!-- Tamil -->
+        <a href="/name?lang=ta">
+            <button class="lang-btn tamil">
+                🟢 தமிழ்
+            </button>
+        </a>
+
+        <!-- English -->
+        <a href="/name?lang=en">
+            <button class="lang-btn english">
+                🔵 English
+            </button>
+        </a>
+
+    </div>
+
+</body>
+
+</html>

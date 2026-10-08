@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>விதைமதி - Tamil Assistant</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f8f3;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 25px 15px 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .header p {
+            color: #555;
+            font-size: 16px;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 700px;
+            margin: 25px auto;
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.10);
+        }
+
+        .welcome {
+            background: #eef7ec;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .question {
+            background: #e8f0ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .answer {
+            background: #f1f8ed;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        /* Voice output button */
+        .speak-button {
+            margin-top: 15px;
+            background: #2e7d32;
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+
+        .speak-button:hover {
+            background: #1b5e20;
+        }
+
+        /* Input area */
+        form {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #4caf50;
+        }
+
+        /* Mic button */
+        .mic-button {
+            width: 55px;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #607d8b;
+            color: white;
+            font-size: 21px;
+            cursor: pointer;
+        }
+
+        .mic-button:hover {
+            background: #455a64;
+        }
+
+        .mic-button.listening {
+            background: #d32f2f;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .send-button {
+            padding: 15px 22px;
+            border: none;
+            border-radius: 10px;
+            background: #4caf50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .send-button:hover {
+            background: #388e3c;
+        }
+
+        .voice-status {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        .back {
+            display: block;
+            width: fit-content;
+            margin: 20px auto 0;
+            text-decoration: none;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                flex-direction: column;
+            }
+
+            .input-wrapper {
+                width: 100%;
+            }
+
+            .send-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🌱 விதைமதி</h1>
+        <p>🤖 தமிழ் விவசாய உதவியாளர்</p>
+    </div>
+
+    <div class="chat-container">
+
+        <div class="welcome">
+            <strong>வணக்கம்! 👋</strong><br>
+            நான் விதைமதி விவசாய உதவியாளர். 🌾<br>
+            வானிலை, நீர்ப்பாசனம், பயிர் தேர்வு மற்றும்
+            பயிர் நோய் பற்றி கேட்கலாம்.<br><br>
+
+            🎙️ <strong>தமிழில் பேசவும் முடியும்!</strong><br>
+            🔊 <strong>பதிலையும் தமிழில் குரலில் கேட்கலாம்.</strong><br>
+            🌐 தமிழ் குரலுக்கு Internet connection தேவை.
+        </div>
+
+        {% if question %}
+        <div class="question">
+            <strong>🧑‍🌾 நீங்கள்:</strong><br>
+            {{ question }}
+        </div>
+        {% endif %}
+
+        {% if answer %}
+        <div class="answer" id="assistantAnswer">
+            <strong>🤖 விதைமதி:</strong><br><br>
+            {{ answer }}
+
+            <br>
+
+            <button
+                type="button"
+                class="speak-button"
+                onclick="speakAnswer()"
+            >
+                🔊 பதிலை கேளுங்கள்
+            </button>
+        </div>
+        {% endif %}
+
+        <form method="POST" id="assistantForm">
+
+            <div class="input-wrapper">
+
+                <input
+                    type="text"
+                    name="question"
+                    id="questionInput"
+                    placeholder="உங்கள் விவசாய கேள்வியை கேளுங்கள்..."
+                    value="{{ question }}"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="mic-button"
+                    id="micButton"
+                    onclick="startVoiceInput()"
+                    title="தமிழில் பேசுங்கள்"
+                >
+                    🎙️
+                </button>
+
+            </div>
+
+            <button type="submit" class="send-button">
+                அனுப்பு ➤
+            </button>
+
+        </form>
+
+        <div class="voice-status" id="voiceStatus"></div>
+
+        <a href="/dashboard" class="back">
+            ← Dashboard-க்கு செல்ல
+        </a>
+
+    </div>
+
+
+    <script>
+
+        /* =====================================================
+           🎙️ TAMIL VOICE INPUT
+           ===================================================== */
+
+        const questionInput = document.getElementById("questionInput");
+        const micButton = document.getElementById("micButton");
+        const voiceStatus = document.getElementById("voiceStatus");
+
+        let recognition;
+        let isListening = false;
+
+        // Check browser support
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        if (SpeechRecognition) {
+
+            recognition = new SpeechRecognition();
+
+            // Tamil language
+            recognition.lang = "ta-IN";
+
+            // Show partial results while speaking
+            recognition.interimResults = true;
+
+            // Only one question at a time
+            recognition.continuous = false;
+
+            recognition.onstart = function () {
+
+                isListening = true;
+
+                micButton.classList.add("listening");
+
+                micButton.innerHTML = "🔴";
+
+                voiceStatus.innerHTML =
+                    "🎙️ கேட்கிறது... தமிழில் பேசுங்கள்";
+            };
+
+            recognition.onresult = function (event) {
+
+                let transcript = "";
+
+                for (
+                    let i = event.resultIndex;
+                    i < event.results.length;
+                    i++
+                ) {
+
+                    transcript +=
+                        event.results[i][0].transcript;
+                }
+
+                questionInput.value = transcript;
+            };
+
+            recognition.onend = function () {
+
+                isListening = false;
+
+                micButton.classList.remove("listening");
+
+                micButton.innerHTML = "🎙️";
+
+                voiceStatus.innerHTML =
+                    "✅ உங்கள் கேள்வி பெறப்பட்டது";
+            };
+
+            recognition.onerror = function (event) {
+
+                isListening = false;
+
+                micButton.classList.remove("listening");
+
+                micButton.innerHTML = "🎙️";
+
+                if (event.error === "not-allowed") {
+
+                    voiceStatus.innerHTML =
+                        "⚠️ Microphone permission வழங்கவும்.";
+
+                } else {
+
+                    voiceStatus.innerHTML =
+                        "⚠️ குரலைப் பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.";
+                }
+            };
+
+        } else {
+
+            voiceStatus.innerHTML =
+                "⚠️ உங்கள் browser voice input-ஐ support செய்யவில்லை.";
+        }
+
+
+        function startVoiceInput() {
+
+            if (!recognition) {
+
+                alert(
+                    "இந்த browser Tamil voice input-ஐ support செய்யவில்லை."
+                );
+
+                return;
+            }
+
+            if (isListening) {
+
+                recognition.stop();
+
+                return;
+            }
+
+            questionInput.value = "";
+
+            recognition.start();
+        }
+
+
+        /* =====================================================
+           🔊 TAMIL VOICE OUTPUT
+           ===================================================== */
+
+        /* =====================================================
+           🔊 TAMIL VOICE OUTPUT — ONLINE TTS
+           ===================================================== */
+
+        let currentAudio = null;
+
+        async function speakAnswer() {
+
+            const answerBox =
+                document.getElementById("assistantAnswer");
+
+            if (!answerBox) {
+                return;
+            }
+
+            // Get answer text only
+            const clonedAnswer = answerBox.cloneNode(true);
+
+            const button =
+                clonedAnswer.querySelector("button");
+
+            if (button) {
+                button.remove();
+            }
+
+            const text =
+                clonedAnswer.innerText
+                    .replace("🤖 விதைமதி:", "")
+                    .trim();
+
+            if (!text) {
+                return;
+            }
+
+            // Stop previous audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            voiceStatus.innerHTML =
+                "🔊 தமிழ் குரல் உருவாக்கப்படுகிறது...";
+
+            try {
+
+                const response = await fetch(
+                    "/assistant/speak",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            text: text
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    let message =
+                        "Tamil voice உருவாக்க முடியவில்லை.";
+
+                    try {
+                        const errorData =
+                            await response.json();
+
+                        if (errorData.error) {
+                            message = errorData.error;
+                        }
+                    } catch (e) {
+                        // Keep the default message.
+                    }
+
+                    throw new Error(message);
+                }
+
+                const audioBlob =
+                    await response.blob();
+
+                const audioUrl =
+                    URL.createObjectURL(audioBlob);
+
+                currentAudio = new Audio(audioUrl);
+
+                currentAudio.onplay = function () {
+                    voiceStatus.innerHTML =
+                        "🔊 தமிழ் பதில் கேட்கிறது...";
+                };
+
+                currentAudio.onended = function () {
+                    voiceStatus.innerHTML =
+                        "✅ தமிழ் குரல் முடிந்தது";
+                    URL.revokeObjectURL(audioUrl);
+                };
+
+                currentAudio.onerror = function () {
+                    voiceStatus.innerHTML =
+                        "⚠️ ஆடியோவை இயக்க முடியவில்லை.";
+                    URL.revokeObjectURL(audioUrl);
+                };
+
+                await currentAudio.play();
+
+            } catch (error) {
+
+                console.error("Tamil TTS error:", error);
+
+                voiceStatus.innerHTML =
+                    "⚠️ " + error.message;
+            }
+        }
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="{{ language|default(session.get('language', 'ta')) }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vethaimathi - Crop Disease Detection</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #234d20;
+
+            /*
+                REALISTIC FARM BACKGROUND
+                --------------------------
+                Sky
+                Sunrise glow
+                Distant hills
+                Farm fields
+                Foreground grass
+            */
+
+            background:
+                /* sunlight glow */
+                radial-gradient(
+                    circle at 78% 16%,
+                    rgba(255, 239, 166, 0.98) 0px,
+                    rgba(255, 221, 125, 0.72) 55px,
+                    rgba(255, 196, 93, 0.30) 120px,
+                    transparent 220px
+                ),
+
+                /* soft clouds */
+                radial-gradient(
+                    ellipse at 18% 18%,
+                    rgba(255,255,255,0.72) 0px,
+                    rgba(255,255,255,0.48) 55px,
+                    transparent 130px
+                ),
+
+                radial-gradient(
+                    ellipse at 42% 27%,
+                    rgba(255,255,255,0.58) 0px,
+                    rgba(255,255,255,0.32) 50px,
+                    transparent 120px
+                ),
+
+                radial-gradient(
+                    ellipse at 88% 31%,
+                    rgba(255,255,255,0.45) 0px,
+                    transparent 115px
+                ),
+
+                /* distant farmland */
+                linear-gradient(
+                    174deg,
+                    transparent 0%,
+                    transparent 47%,
+                    rgba(112,154,70,0.42) 48%,
+                    rgba(93,139,58,0.55) 56%,
+                    rgba(68,119,48,0.75) 64%,
+                    rgba(43,96,42,0.94) 74%,
+                    #245b2d 100%
+                ),
+
+                /* sky */
+                linear-gradient(
+                    to bottom,
+                    #65bde9 0%,
+                    #8fd5ee 22%,
+                    #c8e9e9 40%,
+                    #f4d69b 52%,
+                    #a8c96c 67%,
+                    #4b913f 82%,
+                    #245b2d 100%
+                );
+
+            background-attachment: fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+
+
+        /*
+            REALISTIC LANDSCAPE OVERLAY
+        */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -2;
+
+            background:
+
+                /* distant mountain / tree line */
+                linear-gradient(
+                    170deg,
+                    transparent 0 54%,
+                    rgba(54,96,47,0.48) 55%,
+                    rgba(45,88,43,0.62) 59%,
+                    transparent 60%
+                ),
+
+                /* field rows */
+                repeating-linear-gradient(
+                    166deg,
+                    transparent 0px,
+                    transparent 18px,
+                    rgba(31,91,38,0.20) 19px,
+                    rgba(31,91,38,0.20) 22px,
+                    transparent 23px,
+                    transparent 42px
+                );
+
+            opacity: 0.9;
+        }
+
+
+        /*
+            FOREGROUND FARM GRASS
+        */
+
+        body::after {
+            content: "";
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 22vh;
+            pointer-events: none;
+            z-index: -1;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(22,72,31,0.88),
+                    rgba(35,100,39,0.45),
+                    transparent
+                );
+
+            clip-path: polygon(
+                0 48%,
+                4% 43%,
+                8% 48%,
+                12% 38%,
+                16% 47%,
+                20% 40%,
+                25% 48%,
+                30% 37%,
+                35% 48%,
+                40% 40%,
+                45% 49%,
+                50% 38%,
+                55% 48%,
+                60% 41%,
+                65% 49%,
+                70% 37%,
+                75% 48%,
+                80% 40%,
+                85% 48%,
+                90% 38%,
+                95% 47%,
+                100% 40%,
+                100% 100%,
+                0 100%
+            );
+        }
+
+
+        /*
+            HEADER
+        */
+
+        .header {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(20,91,36,0.92),
+                    rgba(45,130,49,0.78)
+                );
+
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+
+            box-shadow:
+                0 5px 25px rgba(0,0,0,0.25);
+
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(7px);
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.30);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 34px;
+            text-shadow:
+                0 2px 5px rgba(0,0,0,0.22);
+        }
+
+        .header p {
+            margin: 7px 0 0;
+            font-size: 16px;
+            text-shadow:
+                0 1px 3px rgba(0,0,0,0.20);
+        }
+
+
+        /*
+            CONTAINER
+        */
+
+        .container {
+            width: 92%;
+            max-width: 850px;
+            margin: 42px auto;
+        }
+
+
+        /*
+            MAIN GLASS CARD
+        */
+
+        .disease-card {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.91),
+                    rgba(248,255,246,0.82)
+                );
+
+            padding: 35px;
+            border-radius: 26px;
+
+            box-shadow:
+                0 20px 55px rgba(0,0,0,0.24),
+                0 3px 10px rgba(0,0,0,0.10),
+                inset 0 1px 0 rgba(255,255,255,0.95);
+
+            text-align: center;
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border:
+                1px solid rgba(255,255,255,0.80);
+        }
+
+
+        .disease-card h2 {
+            color: #18752c;
+            font-size: 29px;
+            margin: 0 0 10px;
+        }
+
+
+        .intro {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+
+        /*
+            UPLOAD AREA
+        */
+
+        .upload-box {
+            border:
+                2px dashed rgba(55,137,58,0.75);
+
+            border-radius: 20px;
+
+            padding: 35px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(241,251,236,0.92),
+                    rgba(255,255,255,0.76)
+                );
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+
+        .upload-box:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(235,249,228,0.96),
+                    rgba(255,255,255,0.90)
+                );
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 10px 25px rgba(38,95,40,0.12);
+        }
+
+
+        .upload-icon {
+            font-size: 55px;
+            margin-bottom: 12px;
+        }
+
+
+        .upload-box h3 {
+            margin: 5px 0;
+            color: #18752c;
+        }
+
+
+        .upload-box p {
+            color: #777;
+            font-size: 14px;
+        }
+
+
+        /*
+            FILE INPUT
+        */
+
+        .file-input {
+            margin-top: 18px;
+            padding: 12px;
+            width: 100%;
+            max-width: 420px;
+
+            border:
+                1px solid #cbdcc8;
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.94);
+
+            cursor: pointer;
+        }
+
+
+        /*
+            PREVIEW
+        */
+
+        .preview-container {
+            display: none;
+            margin-top: 25px;
+        }
+
+
+        .preview-container h3 {
+            color: #18752c;
+            margin-bottom: 12px;
+        }
+
+
+        #imagePreview {
+            max-width: 100%;
+            max-height: 320px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,0.20);
+
+            border:
+                3px solid rgba(255,255,255,0.9);
+        }
+
+
+        /*
+            BUTTON
+        */
+
+        .detect-btn {
+            width: 100%;
+            max-width: 420px;
+
+            margin-top: 22px;
+            padding: 15px;
+
+            border: none;
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #18752c,
+                    #2e9f3d
+                );
+
+            color: white;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .detect-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 8px 20px rgba(24,117,44,0.30);
+        }
+
+
+        .detect-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        /*
+            RESULT BOX
+        */
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(247,252,244,0.88);
+
+            border:
+                1px solid rgba(196,222,191,0.90);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+
+
+        .result-box h3 {
+            color: #18752c;
+            margin-top: 0;
+            font-size: 21px;
+        }
+
+
+        .result-placeholder {
+            color: #666;
+            line-height: 1.6;
+        }
+
+
+        /*
+            UPLOADED IMAGE
+        */
+
+        .uploaded-image-box {
+            margin: 20px 0;
+            padding: 15px;
+
+            background:
+                rgba(255,255,255,0.92);
+
+            border-radius: 15px;
+
+            border:
+                1px solid #d4e7d0;
+
+            box-shadow:
+                0 5px 16px rgba(0,0,0,0.07);
+        }
+
+
+        .uploaded-image-box h4 {
+            margin-top: 0;
+            color: #18752c;
+        }
+
+
+        .uploaded-image {
+            max-width: 100%;
+            max-height: 300px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 6px 18px rgba(0,0,0,0.14);
+        }
+
+
+        /*
+            DISEASE RESULT
+        */
+
+        .disease-result {
+            margin-top: 15px;
+        }
+
+
+        .disease-name {
+            font-size: 25px;
+            font-weight: bold;
+
+            color: #18752c;
+
+            margin: 12px 0;
+        }
+
+
+        /*
+            CONFIDENCE
+        */
+
+        .confidence-box {
+            margin: 15px auto;
+            padding: 13px;
+
+            max-width: 450px;
+
+            background:
+                rgba(255,255,255,0.94);
+
+            border-radius: 11px;
+
+            border:
+                1px solid #d4e7d0;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,0.05);
+        }
+
+
+        .confidence-box strong {
+            color: #18752c;
+        }
+
+
+        /*
+            WARNING
+        */
+
+        .warning-box {
+            margin-top: 15px;
+            padding: 14px;
+
+            background:
+                rgba(255,248,225,0.94);
+
+            border-left:
+                4px solid #e0a800;
+
+            border-radius: 8px;
+
+            color: #795548;
+
+            line-height: 1.5;
+            text-align: left;
+        }
+
+
+        /*
+            DISEASE INFORMATION
+        */
+
+        .disease-information {
+            margin-top: 25px;
+            padding: 20px;
+
+            background:
+                rgba(255,255,255,0.94);
+
+            border-radius: 15px;
+
+            border:
+                1px solid #d4e7d0;
+
+            text-align: left;
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,0.06);
+        }
+
+
+        .disease-information h3 {
+            color: #18752c;
+            text-align: center;
+
+            margin-top: 0;
+            margin-bottom: 18px;
+
+            font-size: 21px;
+        }
+
+
+        .info-item {
+            padding: 13px;
+            margin-bottom: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f7fff5,
+                    #ffffff
+                );
+
+            border-radius: 9px;
+
+            border:
+                1px solid #e1eee0;
+        }
+
+
+        .info-item strong {
+            color: #18752c;
+            font-size: 15px;
+        }
+
+
+        .info-item p {
+            margin: 7px 0 0;
+
+            color: #555;
+
+            line-height: 1.7;
+
+            font-size: 14px;
+        }
+
+
+        .info-warning {
+            margin-top: 16px;
+            padding: 14px;
+
+            background:
+                rgba(255,248,225,0.95);
+
+            border-left:
+                4px solid #e0a800;
+
+            border-radius: 8px;
+
+            color: #795548;
+
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+
+        /*
+            TOP PREDICTIONS
+        */
+
+        .predictions {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+
+        .predictions h4 {
+            color: #18752c;
+            margin-bottom: 10px;
+        }
+
+
+        .prediction-item {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            padding: 11px 13px;
+            margin-bottom: 8px;
+
+            background:
+                rgba(255,255,255,0.94);
+
+            border-radius: 8px;
+
+            border:
+                1px solid #e1eee0;
+
+            font-size: 14px;
+        }
+
+
+        .prediction-label {
+            font-weight: bold;
+        }
+
+
+        .prediction-score {
+            color: #18752c;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+
+        /*
+            ERROR
+        */
+
+        .error-box {
+            margin-top: 15px;
+            padding: 14px;
+
+            background:
+                rgba(255,235,238,0.95);
+
+            border-left:
+                4px solid #d32f2f;
+
+            border-radius: 8px;
+
+            color: #b71c1c;
+        }
+
+
+        /*
+            BACK BUTTON
+        */
+
+        .back-btn {
+            display: block;
+
+            width: fit-content;
+
+            margin: 25px auto 35px;
+
+            padding: 11px 20px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(24,117,44,0.94),
+                    rgba(46,150,59,0.94)
+                );
+
+            border-radius: 22px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 6px 18px rgba(0,0,0,0.20);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 9px 22px rgba(0,0,0,0.25);
+
+            text-decoration: none;
+        }
+
+
+        /*
+            MOBILE
+        */
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                margin: 25px auto;
+            }
+
+            .disease-card {
+                padding: 22px;
+                border-radius: 20px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .disease-card h2 {
+                font-size: 24px;
+            }
+
+            .prediction-item {
+                flex-direction: column;
+            }
+
+            .upload-box {
+                padding: 28px 15px;
+            }
+
+            .result-box {
+                padding: 18px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>🌾 Vethaimathi</h1>
+
+        {% if language == "en" %}
+
+            <p>Smart Agriculture Assistant</p>
+
+        {% else %}
+
+            <p>ஸ்மார்ட் விவசாய உதவியாளர்</p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="container">
+
+        <div class="disease-card">
+
+            {% if language == "en" %}
+
+                <h2>🦠 Crop Disease Detection</h2>
+
+                <p class="intro">
+                    Upload a photo of your crop leaf
+                    and use AI to identify possible diseases.
+                </p>
+
+            {% else %}
+
+                <h2>🦠 பயிர் நோய் கண்டறிதல்</h2>
+
+                <p class="intro">
+                    உங்கள் பயிரின் இலை புகைப்படத்தை பதிவேற்றி,
+                    AI மூலம் பயிரில் உள்ள நோயை கண்டறிய உதவுங்கள்.
+                </p>
+
+            {% endif %}
+
+
+            <!-- UPLOAD FORM -->
+
+            <form
+                action="/disease"
+                method="POST"
+                enctype="multipart/form-data"
+                onsubmit="showAnalyzing()"
+            >
+
+                <div class="upload-box">
+
+                    <div class="upload-icon">
+                        📷
+                    </div>
+
+
+                    {% if language == "en" %}
+
+                        <h3>
+                            Upload Crop Leaf Image
+                        </h3>
+
+                        <p>
+                            Select a clear photo of the crop leaf
+                        </p>
+
+                    {% else %}
+
+                        <h3>
+                            பயிரின் இலை புகைப்படத்தை பதிவேற்றவும்
+                        </h3>
+
+                        <p>
+                            தெளிவான இலை புகைப்படத்தை தேர்வு செய்யவும்
+                        </p>
+
+                    {% endif %}
+
+
+                    <input
+                        type="file"
+                        id="leafImage"
+                        name="leaf_image"
+                        class="file-input"
+                        accept="image/*"
+                        onchange="previewImage(event)"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PREVIEW -->
+
+                <div
+                    class="preview-container"
+                    id="previewContainer"
+                >
+
+                    <h3>
+
+                        {% if language == "en" %}
+
+                            🌱 Image Preview
+
+                        {% else %}
+
+                            🌱 புகைப்பட முன்னோட்டம்
+
+                        {% endif %}
+
+                    </h3>
+
+
+                    <img
+                        id="imagePreview"
+                        alt="Crop Leaf Preview"
+                    >
+
+
+                    <br>
+
+
+                    <button
+                        type="submit"
+                        class="detect-btn"
+                        id="detectButton"
+                    >
+
+                        {% if language == "en" %}
+
+                            🔍 Detect Disease
+
+                        {% else %}
+
+                            🔍 நோயை கண்டறியவும்
+
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- RESULT -->
+
+            <div class="result-box">
+
+                <h3>
+
+                    {% if language == "en" %}
+
+                        🧠 Detection Result
+
+                    {% else %}
+
+                        🧠 நோய் கண்டறிதல் முடிவு
+
+                    {% endif %}
+
+                </h3>
+
+
+                <!-- ERROR -->
+
+                {% if error %}
+
+                    <div class="error-box">
+
+                        ❌ {{ error }}
+
+                    </div>
+
+
+                <!-- DISEASE RESULT -->
+
+                {% elif disease_name %}
+
+                    <div class="disease-result">
+
+
+                        <!-- UPLOADED IMAGE -->
+
+                        {% if image_path %}
+
+                            <div class="uploaded-image-box">
+
+                                <h4>
+
+                                    {% if language == "en" %}
+
+                                        📷 Analyzed Image
+
+                                    {% else %}
+
+                                        📷 பகுப்பாய்வு செய்யப்பட்ட படம்
+
+                                    {% endif %}
+
+                                </h4>
+
+
+                                <img
+                                    src="{{ image_path }}"
+                                    class="uploaded-image"
+                                    alt="Uploaded Crop Leaf"
+                                >
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <div>
+
+                            🦠
+
+                            <strong>
+
+                                {% if language == "en" %}
+
+                                    Possible Disease
+
+                                {% else %}
+
+                                    சாத்தியமான நோய்
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="disease-name">
+
+                            {{
+                                disease_name
+                                .replace("___", " - ")
+                                .replace("_", " ")
+                            }}
+
+                        </div>
+
+
+                        <!-- CONFIDENCE -->
+
+                        <div class="confidence-box">
+
+                            📊
+
+                            <strong>
+
+                                {% if language == "en" %}
+
+                                    AI Confidence:
+
+                                {% else %}
+
+                                    AI நம்பகத்தன்மை:
+
+                                {% endif %}
+
+                            </strong>
+
+                            {{ confidence }}%
+
+                        </div>
+
+
+                        <!-- CONFIDENCE WARNING -->
+
+                        {% if confidence < 50 %}
+
+                            <div class="warning-box">
+
+                                ⚠️
+
+                                <strong>
+
+                                    {% if language == "en" %}
+
+                                        Low confidence prediction.
+
+                                    {% else %}
+
+                                        குறைந்த நம்பகத்தன்மை கொண்ட கணிப்பு.
+
+                                    {% endif %}
+
+                                </strong>
+
+                                <br><br>
+
+                                {% if language == "en" %}
+
+                                    This AI result has a low confidence level.
+                                    Uploading a clearer leaf image may provide
+                                    a better prediction.
+
+                                {% else %}
+
+                                    இந்த AI முடிவு குறைந்த confidence-ல்
+                                    கிடைத்துள்ளது. தெளிவான இலை புகைப்படத்தை
+                                    பதிவேற்றினால் சிறந்த prediction கிடைக்கலாம்.
+
+                                {% endif %}
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="warning-box">
+
+                                🌱
+
+                                {% if language == "en" %}
+
+                                    Use this AI prediction only as
+                                    initial guidance. If needed,
+                                    confirm it with an agriculture expert.
+
+                                {% else %}
+
+                                    இந்த AI prediction-ஐ ஆரம்ப கட்ட
+                                    வழிகாட்டுதலாக மட்டும் பயன்படுத்தவும்.
+                                    தேவையானால் வேளாண்மை நிபுணரிடம்
+                                    உறுதிப்படுத்திக்கொள்ளவும்.
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- DISEASE INFORMATION -->
+
+                        {% if disease_info %}
+
+                            <div class="disease-information">
+
+                                <h3>
+
+                                    {% if language == "en" %}
+
+                                        📋 Disease Information
+
+                                    {% else %}
+
+                                        📋 நோய் பற்றிய தகவல்
+
+                                    {% endif %}
+
+                                </h3>
+
+
+                                <!-- DISEASE NAME -->
+
+                                <div class="info-item">
+
+                                    <strong>
+
+                                        {% if language == "en" %}
+
+                                            🦠 Disease Name
+
+                                        {% else %}
+
+                                            🦠 நோய் பெயர்
+
+                                        {% endif %}
+
+                                    </strong>
+
+                                    <p>
+                                        {{ disease_info.tamil_name }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- SYMPTOMS -->
+
+                                <div class="info-item">
+
+                                    <strong>
+
+                                        {% if language == "en" %}
+
+                                            🔎 Symptoms
+
+                                        {% else %}
+
+                                            🔎 அறிகுறிகள்
+
+                                        {% endif %}
+
+                                    </strong>
+
+                                    <p>
+                                        {{ disease_info.symptoms }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- AFFECTED CROP -->
+
+                                <div class="info-item">
+
+                                    <strong>
+
+                                        {% if language == "en" %}
+
+                                            🌾 Affected Crop
+
+                                        {% else %}
+
+                                            🌾 பாதிக்கப்படும் பயிர்
+
+                                        {% endif %}
+
+                                    </strong>
+
+                                    <p>
+                                        {{ disease_info.crop }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- POSSIBLE CAUSE -->
+
+                                <div class="info-item">
+
+                                    <strong>
+
+                                        {% if language == "en" %}
+
+                                            💡 Possible Cause
+
+                                        {% else %}
+
+                                            💡 சாத்தியமான காரணம்
+
+                                        {% endif %}
+
+                                    </strong>
+
+                                    <p>
+                                        {{ disease_info.cause }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- MANAGEMENT -->
+
+                                <div class="info-item">
+
+                                    <strong>
+
+                                        {% if language == "en" %}
+
+                                            🛡️ Prevention / Management
+
+                                        {% else %}
+
+                                            🛡️ தடுப்பு / மேலாண்மை
+
+                                        {% endif %}
+
+                                    </strong>
+
+                                    <p>
+                                        {{ disease_info.management }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- INFORMATION WARNING -->
+
+                                <div class="info-warning">
+
+                                    ⚠️
+
+                                    {% if language == "en" %}
+
+                                        Use this AI result only as
+                                        initial guidance. For confirmed
+                                        disease identification, consult
+                                        an agriculture expert.
+
+                                    {% else %}
+
+                                        இந்த AI முடிவு ஆரம்ப கட்ட
+                                        வழிகாட்டுதலாக மட்டும் பயன்படுத்தவும்.
+                                        உறுதியான நோய் கண்டறிதலுக்கு
+                                        வேளாண்மை நிபுணரிடம் ஆலோசனை பெறவும்.
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- TOP PREDICTIONS -->
+
+                        {% if predictions %}
+
+                            <div class="predictions">
+
+                                <h4>
+
+                                    {% if language == "en" %}
+
+                                        📊 Top AI Predictions
+
+                                    {% else %}
+
+                                        📊 AI கணிப்புகள்
+
+                                    {% endif %}
+
+                                </h4>
+
+
+                                {% for item in predictions %}
+
+                                    <div class="prediction-item">
+
+                                        <span class="prediction-label">
+
+                                            {{ item.tamil_name }}
+
+                                        </span>
+
+
+                                        <span class="prediction-score">
+
+                                            {{ item.score }}%
+
+                                        </span>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                {% else %}
+
+                    <!-- DEFAULT RESULT -->
+
+                    <div
+                        class="result-placeholder"
+                        id="result"
+                    >
+
+                        {% if language == "en" %}
+
+                            Upload your crop image to see
+                            the AI disease detection result here.
+
+                        {% else %}
+
+                            உங்கள் பயிரின் படத்தை பதிவேற்றிய பிறகு
+                            AI நோய் கண்டறிதல் முடிவு இங்கே காட்டப்படும்.
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- BACK -->
+
+        <a
+            href="/dashboard"
+            class="back-btn"
+        >
+
+            {% if language == "en" %}
+
+                ← Back to Dashboard
+
+            {% else %}
+
+                ← Dashboard-க்கு செல்ல
+
+            {% endif %}
+
+        </a>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        function previewImage(event) {
+
+            const file =
+                event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+
+            const preview =
+                document.getElementById("imagePreview");
+
+            const container =
+                document.getElementById("previewContainer");
+
+
+            preview.src =
+                URL.createObjectURL(file);
+
+            container.style.display =
+                "block";
+        }
+
+
+        function showAnalyzing() {
+
+            const button =
+                document.getElementById("detectButton");
+
+            if (button) {
+
+                {% if language == "en" %}
+
+                    button.innerHTML =
+                        "⏳ Analyzing uploaded image...";
+
+                {% else %}
+
+                    button.innerHTML =
+                        "⏳ புகைப்படத்தை பகுப்பாய்வு செய்கிறது...";
+
+                {% endif %}
+
+
+                button.disabled =
+                    true;
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

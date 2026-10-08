@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="{{ 'ta' if language == 'ta' else 'en' }}">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% if language == "en" %}
+        <title>Farmer Name | Vethaimathi</title>
+    {% else %}
+        <title>விதைமதி | விவசாயி பெயர்</title>
+    {% endif %}
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h1>🌱 Vethaimathi</h1>
+
+        {% if language == "en" %}
+
+            <h2>Start Your Farming Journey</h2>
+
+            <p>Let's begin your smart farming journey 🌾</p>
+
+            <h3>👤 Your Name</h3>
+
+            <form action="/name" method="POST">
+
+                <input
+                    type="text"
+                    name="farmer_name"
+                    placeholder="Enter your name"
+                    required
+                >
+
+                <input
+                    type="hidden"
+                    name="language"
+                    value="en"
+                >
+
+                <button type="submit">
+                    Continue →
+                </button>
+
+            </form>
+
+            <p>
+                Enter your name to continue
+            </p>
+
+        {% else %}
+
+            <h2>விதைமதி</h2>
+
+            <p>
+                உங்கள் விவசாய பயணத்தை<br>
+                தொடங்கலாம் 🌾
+            </p>
+
+            <h3>👤 உங்கள் பெயர்</h3>
+
+            <form action="/name" method="POST">
+
+                <input
+                    type="text"
+                    name="farmer_name"
+                    placeholder="உங்கள் பெயரை உள்ளிடுங்கள்"
+                    required
+                >
+
+                <input
+                    type="hidden"
+                    name="language"
+                    value="ta"
+                >
+
+                <button type="submit">
+                    தொடரவும் →
+                </button>
+
+            </form>
+
+            <p>
+                உங்கள் பெயரை மட்டும் உள்ளிட்டு தொடரலாம்
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

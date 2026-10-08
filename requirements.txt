@@ -1,0 +1,9 @@
+Flask
+requests
+Pillow
+Werkzeug
+edge-tts
+transformers
+torch
+torchvision
+gunicorn

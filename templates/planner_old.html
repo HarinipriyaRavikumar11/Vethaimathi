@@ -1,0 +1,1070 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vethaimathi - Smart Agriculture Planner</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9, #f5fff2);
+            color: #234d20;
+        }
+
+
+        /* -----------------------------
+           HEADER
+        ----------------------------- */
+
+        .header {
+            background: linear-gradient(135deg, #168b16, #2eaa2e);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 34px;
+        }
+
+        .header p {
+            margin: 7px 0 0;
+            font-size: 16px;
+        }
+
+
+        /* -----------------------------
+           MAIN CONTAINER
+        ----------------------------- */
+
+        .container {
+            width: 92%;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+
+        /* -----------------------------
+           PLANNER CARD
+        ----------------------------- */
+
+        .planner-card {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+        }
+
+        .planner-card h2 {
+            text-align: center;
+            color: #168b16;
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .intro {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+
+        /* -----------------------------
+           FORM
+        ----------------------------- */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: white;
+            transition: 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76,175,80,0.12);
+        }
+
+
+        /* -----------------------------
+           RECOMMEND BUTTON
+        ----------------------------- */
+
+        .recommend-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #168b16, #2eaa2e);
+            color: white;
+            border: none;
+            border-radius: 11px;
+            font-size: 19px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .recommend-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(22,139,22,0.25);
+        }
+
+
+        /* =================================================
+           🌦️ WEATHER SUMMARY
+        ================================================= */
+
+        .weather-section {
+            margin-top: 32px;
+            margin-bottom: 30px;
+        }
+
+        .weather-title {
+            text-align: center;
+            color: #168b16;
+            font-size: 24px;
+            margin-bottom: 18px;
+        }
+
+        .weather-card {
+            background: linear-gradient(135deg, #f4fff3, #eaf8e7);
+            border: 1px solid #cfe8c9;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .weather-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0efdc;
+        }
+
+        .weather-icon {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .weather-label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .weather-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #168b16;
+        }
+
+
+        /* =================================================
+           🌧️ IRRIGATION WARNING
+        ================================================= */
+
+        .irrigation-warning {
+            margin-top: 16px;
+            padding: 15px;
+            border-left: 5px solid #168b16;
+            background: #eef8eb;
+            border-radius: 9px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .irrigation-warning strong {
+            color: #168b16;
+        }
+
+
+        /* =================================================
+           ⭐ BEST MATCH SUMMARY
+        ================================================= */
+
+        .best-match-summary {
+            margin-top: 22px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f0faed, #e4f5df);
+            border: 2px solid #168b16;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .best-match-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #168b16;
+            margin-bottom: 7px;
+        }
+
+        .best-match-crop {
+            font-size: 27px;
+            font-weight: bold;
+            color: #168b16;
+            margin-bottom: 8px;
+        }
+
+        .best-match-reason {
+            color: #4b6547;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+
+        /* -----------------------------
+           RESULT SECTION
+        ----------------------------- */
+
+        .result-section {
+            margin-top: 35px;
+        }
+
+        .result-title {
+            text-align: center;
+            color: #168b16;
+            font-size: 27px;
+            margin-bottom: 8px;
+        }
+
+        .result-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+
+        /* -----------------------------
+           CROP GRID
+        ----------------------------- */
+
+        .crop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+
+        /* -----------------------------
+           CROP CARD
+        ----------------------------- */
+
+        .crop-card {
+            background: #ffffff;
+            border: 1px solid #dcebd8;
+            border-radius: 17px;
+            padding: 22px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .crop-card.best-card {
+            border: 2px solid #168b16;
+        }
+
+
+        /* -----------------------------
+           BEST MATCH
+        ----------------------------- */
+
+        .best-match {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #168b16;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 0 0 0 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+
+        /* -----------------------------
+           CROP HEADER
+        ----------------------------- */
+
+        .crop-name {
+            font-size: 23px;
+            font-weight: bold;
+            color: #168b16;
+            margin-bottom: 16px;
+            padding-right: 75px;
+        }
+
+
+        /* -----------------------------
+           WEATHER SCORE
+        ----------------------------- */
+
+        .score-box {
+            margin-bottom: 14px;
+            padding: 10px;
+            background: #edf8ea;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        .score-box strong {
+            color: #168b16;
+        }
+
+
+        /* -----------------------------
+           CROP INFO
+        ----------------------------- */
+
+        .crop-info {
+            margin-bottom: 14px;
+            padding: 10px;
+            background: #f5faf3;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        .crop-info strong {
+            color: #234d20;
+        }
+
+
+        /* -----------------------------
+           WHY RECOMMENDED
+        ----------------------------- */
+
+        .why-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #eef8eb;
+            border-left: 4px solid #168b16;
+            border-radius: 7px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .why-box strong {
+            color: #168b16;
+        }
+
+
+        /* -----------------------------
+           NO RESULT
+        ----------------------------- */
+
+        .no-result {
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            background: #fff8e1;
+            border-radius: 12px;
+            color: #795548;
+        }
+
+
+        /* -----------------------------
+           BACK BUTTON
+        ----------------------------- */
+
+        .back-btn {
+            display: block;
+            width: fit-content;
+            margin: 28px auto 0;
+            text-decoration: none;
+            color: #168b16;
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+
+
+        /* -----------------------------
+           MOBILE RESPONSIVE
+        ----------------------------- */
+
+        @media (max-width: 700px) {
+
+            .container {
+                width: 94%;
+                margin: 25px auto;
+            }
+
+            .planner-card {
+                padding: 22px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .planner-card h2 {
+                font-size: 24px;
+            }
+
+            .crop-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weather-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .best-match-crop {
+                font-size: 24px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =============================
+         HEADER
+    ============================== -->
+
+    <div class="header">
+
+        <h1>🌾 Vethaimathi</h1>
+
+        <p>Smart Agriculture Planner</p>
+
+    </div>
+
+
+
+    <!-- =============================
+         MAIN CONTAINER
+    ============================== -->
+
+    <div class="container">
+
+        <div class="planner-card">
+
+
+            <!-- =============================
+                 TITLE
+            ============================== -->
+
+            <h2>🌱 பயிர் பரிந்துரை</h2>
+
+            <p class="intro">
+                உங்கள் விவசாய நிலத்தின் தகவல்களை உள்ளிட்டு
+                பொருத்தமான பயிர்களை அறிந்து கொள்ளுங்கள்.
+            </p>
+
+
+
+            <!-- =============================
+                 PLANNER FORM
+            ============================= -->
+
+            <form method="POST" action="/planner">
+
+
+                <!-- SOIL -->
+
+                <div class="form-group">
+
+                    <label for="soil">
+                        🌾 Soil Type
+                    </label>
+
+                    <select id="soil" name="soil" required>
+
+                        <option value="">
+                            Select Soil Type
+                        </option>
+
+                        <option value="red">
+                            Red Soil
+                        </option>
+
+                        <option value="black">
+                            Black Soil
+                        </option>
+
+                        <option value="alluvial">
+                            Alluvial Soil
+                        </option>
+
+                        <option value="sandy">
+                            Sandy Soil
+                        </option>
+
+                        <option value="clay">
+                            Clay Soil
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- WATER -->
+
+                <div class="form-group">
+
+                    <label for="water">
+                        💧 Water Source
+                    </label>
+
+                    <select id="water" name="water" required>
+
+                        <option value="">
+                            Select Water Source
+                        </option>
+
+                        <option value="rain">
+                            Rain Water
+                        </option>
+
+                        <option value="well">
+                            Well
+                        </option>
+
+                        <option value="borewell">
+                            Borewell
+                        </option>
+
+                        <option value="canal">
+                            Canal
+                        </option>
+
+                        <option value="river">
+                            River
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- REGION -->
+
+                <div class="form-group">
+
+                    <label for="region">
+                        📍 Region
+                    </label>
+
+                    <select id="region" name="region" required>
+
+                        <option value="">
+                            Select Region
+                        </option>
+
+                        <option value="cuddalore">
+                            Cuddalore
+                        </option>
+
+                        <option value="villupuram">
+                            Villupuram
+                        </option>
+
+                        <option value="chennai">
+                            Chennai
+                        </option>
+
+                        <option value="pondicherry">
+                            Puducherry
+                        </option>
+
+                        <option value="other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- BUDGET -->
+
+                <div class="form-group">
+
+                    <label for="budget">
+                        💰 Budget (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="budget"
+                        name="budget"
+                        placeholder="Enter your budget"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="recommend-btn"
+                >
+                    🔍 பயிர் பரிந்துரை
+                </button>
+
+            </form>
+
+
+
+            <!-- =================================================
+                 🌦️ LIVE WEATHER SECTION
+            ================================================== -->
+
+            {% if crops and weather_available %}
+
+            <div class="weather-section">
+
+                <h3 class="weather-title">
+                    🌦️ Live Weather Summary
+                </h3>
+
+
+                <div class="weather-card">
+
+                    <div class="weather-grid">
+
+
+                        <!-- TEMPERATURE -->
+
+                        <div class="weather-item">
+
+                            <div class="weather-icon">
+                                🌡️
+                            </div>
+
+                            <span class="weather-label">
+                                Current Temperature
+                            </span>
+
+                            <span class="weather-value">
+                                {{ temperature }}°C
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- RAIN -->
+
+                        <div class="weather-item">
+
+                            <div class="weather-icon">
+                                🌧️
+                            </div>
+
+                            <span class="weather-label">
+                                Rain Probability
+                            </span>
+
+                            <span class="weather-value">
+                                {{ rain_probability }}%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- IRRIGATION WARNING -->
+
+                    <div class="irrigation-warning">
+
+                        <strong>
+                            💧 Irrigation Advice
+                        </strong>
+
+                        <br>
+
+                        {{ irrigation_warning }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 ⭐ BEST MATCH SUMMARY
+            ================================================== -->
+
+            {% if best_match %}
+
+            <div class="best-match-summary">
+
+                <div class="best-match-label">
+                    ⭐ WEATHER BEST MATCH
+                </div>
+
+                <div class="best-match-crop">
+
+                    {% if best_match == "Rice" %}
+                        🌾 Rice
+
+                    {% elif best_match == "Groundnut" %}
+                        🥜 Groundnut
+
+                    {% elif best_match == "Black Gram" %}
+                        🌱 Black Gram
+
+                    {% elif best_match == "Millet" %}
+                        🌾 Millet
+
+                    {% elif best_match == "Cotton" %}
+                        🌿 Cotton
+
+                    {% elif best_match == "Sugarcane" %}
+                        🎋 Sugarcane
+
+                    {% elif best_match == "Banana" %}
+                        🍌 Banana
+
+                    {% elif best_match == "Watermelon" %}
+                        🍉 Watermelon
+
+                    {% else %}
+                        🌱 {{ best_match }}
+
+                    {% endif %}
+
+                </div>
+
+                <div class="best-match-reason">
+
+                    💡 {{ best_match_reason }}
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 🌱 RECOMMENDATION RESULTS
+            ================================================== -->
+
+            {% if crop_results %}
+
+            <div class="result-section">
+
+
+                <h3 class="result-title">
+                    🌱 Suggested Crops
+                </h3>
+
+
+                <p class="result-subtitle">
+                    உங்கள் நிலத் தகவல்கள் மற்றும் தற்போதைய வானிலை
+                    அடிப்படையில் பரிந்துரைக்கப்படும் பயிர்கள்
+                </p>
+
+
+
+                <div class="crop-grid">
+
+
+                    <!-- IMPORTANT:
+                         crop_results is already sorted by
+                         weather suitability score from app.py
+                    -->
+
+                    {% for result in crop_results %}
+
+                    {% set crop = result.name %}
+
+
+                    <div class="crop-card {% if crop == best_match %}best-card{% endif %}">
+
+
+                        <!-- BEST MATCH -->
+
+                        {% if crop == best_match %}
+
+                        <div class="best-match">
+                            ⭐ BEST MATCH
+                        </div>
+
+                        {% endif %}
+
+
+
+                        <!-- CROP NAME -->
+
+                        <div class="crop-name">
+
+                            {% if crop == "Rice" %}
+                                🌾 Rice
+
+                            {% elif crop == "Groundnut" %}
+                                🥜 Groundnut
+
+                            {% elif crop == "Black Gram" %}
+                                🌱 Black Gram
+
+                            {% elif crop == "Millet" %}
+                                🌾 Millet
+
+                            {% elif crop == "Cotton" %}
+                                🌿 Cotton
+
+                            {% elif crop == "Sugarcane" %}
+                                🎋 Sugarcane
+
+                            {% elif crop == "Banana" %}
+                                🍌 Banana
+
+                            {% elif crop == "Watermelon" %}
+                                🍉 Watermelon
+
+                            {% else %}
+                                🌱 {{ crop }}
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- WEATHER SCORE -->
+
+                        <div class="score-box">
+
+                            🌦️
+
+                            <strong>
+                                Weather Suitability:
+                            </strong>
+
+                            {{ result.score }}/80
+
+                        </div>
+
+
+
+                        <!-- WATER -->
+
+                        <div class="crop-info">
+
+                            💧
+
+                            <strong>
+                                Water Requirement:
+                            </strong>
+
+                            {% if crop in ["Rice", "Sugarcane", "Banana"] %}
+                                High
+
+                            {% elif crop in ["Groundnut", "Cotton"] %}
+                                Medium
+
+                            {% else %}
+                                Low to Medium
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- DURATION -->
+
+                        <div class="crop-info">
+
+                            ⏳
+
+                            <strong>
+                                Growing Duration:
+                            </strong>
+
+                            {% if crop == "Rice" %}
+                                120–150 days
+
+                            {% elif crop == "Groundnut" %}
+                                100–120 days
+
+                            {% elif crop == "Black Gram" %}
+                                70–90 days
+
+                            {% elif crop == "Millet" %}
+                                80–110 days
+
+                            {% elif crop == "Cotton" %}
+                                150–180 days
+
+                            {% elif crop == "Sugarcane" %}
+                                10–12 months
+
+                            {% elif crop == "Banana" %}
+                                10–12 months
+
+                            {% elif crop == "Watermelon" %}
+                                80–100 days
+
+                            {% else %}
+                                Depends on variety
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- BUDGET -->
+
+                        <div class="crop-info">
+
+                            💰
+
+                            <strong>
+                                Budget Suitability:
+                            </strong>
+
+                            {% if crop in ["Millet", "Black Gram"] %}
+                                Low Budget Friendly
+
+                            {% elif crop in ["Groundnut", "Rice", "Cotton"] %}
+                                Medium Budget
+
+                            {% else %}
+                                Medium to High
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             💡 ACTUAL WEATHER REASON
+                        ================================================== -->
+
+                        <div class="why-box">
+
+                            <strong>
+                                💡 Why recommended?
+                            </strong>
+
+                            <br>
+
+                            {{ result.reason }}
+
+                        </div>
+
+
+                    </div>
+
+
+                    {% endfor %}
+
+                </div>
+
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- =============================
+                 NO RESULT
+            ============================== -->
+
+            {% if crops and not crop_results %}
+
+            <div class="no-result">
+
+                🌱 Crop recommendations are available,
+                but weather ranking information could not be loaded.
+
+            </div>
+
+            {% endif %}
+
+
+
+        </div>
+
+
+
+        <!-- =============================
+             BACK
+        ============================== -->
+
+        <a href="/" class="back-btn">
+            ← Back to Home
+        </a>
+
+
+    </div>
+
+
+</body>
+
+</html>
+```

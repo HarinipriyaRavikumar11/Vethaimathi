@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="{{ language }}">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% if language == "en" %}
+            Vethaimathi - Dashboard
+        {% else %}
+            விதைமதி - Dashboard
+        {% endif %}
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================
+           BODY + AGRICULTURE BACKGROUND
+        ========================================= */
+
+        body {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            margin: 0;
+
+            padding: 35px 20px 70px;
+
+            color: #23412b;
+
+            min-height: 100vh;
+
+            position: relative;
+
+            overflow-x: hidden;
+
+            background:
+
+                radial-gradient(
+                    circle at 80% 12%,
+                    rgba(255, 230, 130, 0.85) 0px,
+                    rgba(255, 230, 130, 0.35) 55px,
+                    transparent 125px
+                ),
+
+                linear-gradient(
+                    to bottom,
+                    #dff4ff 0%,
+                    #eef9f1 45%,
+                    #c9e9bd 70%,
+                    #8fbe6f 100%
+                );
+
+        }
+
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            left: -5%;
+            right: -5%;
+
+            bottom: 0;
+
+            height: 30vh;
+
+            z-index: -2;
+
+            background:
+
+                linear-gradient(
+                    150deg,
+                    transparent 0 35%,
+                    rgba(72, 125, 60, 0.45) 36% 48%,
+                    transparent 49%
+                ),
+
+                linear-gradient(
+                    25deg,
+                    transparent 0 42%,
+                    rgba(91, 145, 67, 0.55) 43% 58%,
+                    transparent 59%
+                );
+
+            opacity: 0.75;
+
+        }
+
+
+        body::after {
+
+            content: "";
+
+            position: fixed;
+
+            left: -10%;
+            right: -10%;
+
+            bottom: -8vh;
+
+            height: 27vh;
+
+            z-index: -1;
+
+            background:
+
+                repeating-linear-gradient(
+                    8deg,
+                    rgba(39, 105, 49, 0.15) 0px,
+                    rgba(39, 105, 49, 0.15) 3px,
+                    transparent 3px,
+                    transparent 18px
+                ),
+
+                linear-gradient(
+                    to bottom,
+                    #8fbe6f,
+                    #5d9b4e
+                );
+
+            border-radius: 50% 50% 0 0;
+
+            transform: rotate(-1deg);
+
+        }
+
+
+        /* =========================================
+           MAIN TITLE
+        ========================================= */
+
+        h1 {
+
+            text-align: center;
+
+            color: #1f7430;
+
+            margin: 5px 0 8px;
+
+            font-size: 42px;
+
+            font-weight: 800;
+
+            letter-spacing: 0.5px;
+
+            text-shadow:
+                0 2px 5px rgba(255,255,255,0.8);
+
+        }
+
+
+        /* =========================================
+           FARMER WELCOME
+        ========================================= */
+
+        .farmer-welcome {
+
+            width: fit-content;
+
+            max-width: 90%;
+
+            margin: 0 auto 25px;
+
+            padding: 10px 22px;
+
+            background:
+                rgba(255, 255, 255, 0.78);
+
+            backdrop-filter: blur(8px);
+
+            -webkit-backdrop-filter: blur(8px);
+
+            border: 1px solid
+                rgba(76, 175, 80, 0.25);
+
+            border-radius: 30px;
+
+            color: #2e7d32;
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+            text-align: center;
+
+            box-shadow:
+                0 5px 18px rgba(46, 125, 50, 0.12);
+
+        }
+
+
+        .farmer-welcome strong {
+
+            color: #176b29;
+
+        }
+
+
+        /* =========================================
+           MAIN FEATURE NAVIGATION
+        ========================================= */
+
+        .feature-section {
+
+            max-width: 1000px;
+
+            margin: 0 auto 32px;
+
+        }
+
+
+        .feature-section h2 {
+
+            text-align: center;
+
+            color: #216b2d;
+
+            margin-bottom: 20px;
+
+            font-size: 25px;
+
+            text-shadow:
+                0 1px 3px rgba(255,255,255,0.8);
+
+        }
+
+
+        .feature-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 17px;
+
+        }
+
+
+        .feature-card {
+
+            display: block;
+
+            padding: 23px 13px;
+
+            background:
+                rgba(255, 255, 255, 0.91);
+
+            backdrop-filter: blur(8px);
+
+            -webkit-backdrop-filter: blur(8px);
+
+            color: #23412b;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            border-radius: 18px;
+
+            border: 1px solid
+                rgba(255, 255, 255, 0.9);
+
+            box-shadow:
+                0 8px 25px
+                rgba(39, 91, 43, 0.15);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+
+        }
+
+
+        .feature-card:hover {
+
+            transform:
+                translateY(-6px);
+
+            box-shadow:
+                0 14px 30px
+                rgba(39, 91, 43, 0.22);
+
+            border-color:
+                #66bb6a;
+
+        }
+
+
+        .feature-icon {
+
+            display: block;
+
+            font-size: 35px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .feature-card strong {
+
+            display: block;
+
+            color: #247331;
+
+            font-size: 15px;
+
+            line-height: 1.45;
+
+        }
+
+
+        /* =========================================
+           COMMON INFORMATION CARDS
+        ========================================= */
+
+        .weather-card,
+        .forecast-card,
+        .alerts-card {
+
+            max-width: 650px;
+
+            margin: 30px auto;
+
+            padding: 27px;
+
+            background:
+                rgba(255, 255, 255, 0.93);
+
+            backdrop-filter: blur(10px);
+
+            -webkit-backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            border:
+                1px solid rgba(255,255,255,0.9);
+
+            box-shadow:
+                0 10px 30px
+                rgba(38, 82, 42, 0.16);
+
+        }
+
+
+        .weather-card h2,
+        .forecast-card h2,
+        .alerts-card h2 {
+
+            margin-top: 0;
+
+            margin-bottom: 18px;
+
+            color: #236b2f;
+
+        }
+
+
+        /* =========================================
+           TODAY'S WEATHER
+        ========================================= */
+
+        .weather-item {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 15px 0;
+
+            border-bottom:
+                1px solid #e5eee6;
+
+            font-size: 18px;
+
+        }
+
+
+        .weather-item:last-child {
+
+            border-bottom: none;
+
+        }
+
+
+        .weather-item strong {
+
+            color: #1f6329;
+
+        }
+
+
+        /* =========================================
+           7 DAYS FORECAST
+        ========================================= */
+
+        .forecast-item {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 15px 0;
+
+            border-bottom:
+                1px solid #e5eee6;
+
+            font-size: 16px;
+
+            gap: 10px;
+
+        }
+
+
+        .forecast-item:last-child {
+
+            border-bottom: none;
+
+        }
+
+
+        .forecast-item strong {
+
+            color: #286b31;
+
+        }
+
+
+        /* =========================================
+           AGRICULTURE ALERTS
+        ========================================= */
+
+        .alert-item {
+
+            padding: 16px;
+
+            margin: 12px 0;
+
+            background:
+                #fff8e1;
+
+            border-radius: 12px;
+
+            border-left:
+                5px solid #ff9800;
+
+        }
+
+
+        .alert-item h3 {
+
+            margin:
+                0 0 8px 0;
+
+            color: #765400;
+
+        }
+
+
+        .alert-item p {
+
+            margin: 0;
+
+            line-height: 1.6;
+
+        }
+
+
+        .no-alert {
+
+            padding: 16px;
+
+            background:
+                #e8f5e9;
+
+            border-radius: 12px;
+
+            line-height: 1.6;
+
+            color: #286b31;
+
+        }
+
+
+        /* =========================================
+           SMALL FARMING DECORATION
+        ========================================= */
+
+        .farm-decoration {
+
+            text-align: center;
+
+            margin-top: 35px;
+
+            font-size: 26px;
+
+            opacity: 0.9;
+
+            letter-spacing: 8px;
+
+        }
+
+
+        /* =========================================
+           MOBILE RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 850px) {
+
+            .feature-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            body {
+
+                padding:
+                    22px 14px 50px;
+
+            }
+
+
+            h1 {
+
+                font-size: 32px;
+
+            }
+
+
+            .farmer-welcome {
+
+                font-size: 17px;
+
+                padding:
+                    9px 16px;
+
+            }
+
+
+            .feature-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 12px;
+
+            }
+
+
+            .feature-card {
+
+                padding:
+                    18px 9px;
+
+            }
+
+
+            .feature-icon {
+
+                font-size: 29px;
+
+            }
+
+
+            .feature-card strong {
+
+                font-size: 14px;
+
+            }
+
+
+            .weather-card,
+            .forecast-card,
+            .alerts-card {
+
+                padding: 21px;
+
+                margin:
+                    22px auto;
+
+            }
+
+
+            .weather-item {
+
+                font-size: 16px;
+
+            }
+
+
+            .forecast-item {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 5px;
+
+            }
+
+        }
+
+
+        @media (max-width: 430px) {
+
+            .feature-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+
+            }
+
+
+            h1 {
+
+                font-size: 29px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         DASHBOARD TITLE
+    ========================================= -->
+
+    <h1>
+        🌱
+        {% if language == "en" %}
+            Vethaimathi
+        {% else %}
+            விதைமதி
+        {% endif %}
+    </h1>
+
+
+    <!-- =========================================
+         FARMER WELCOME
+    ========================================= -->
+
+    {% if farmer_name %}
+
+    <div class="farmer-welcome">
+
+        {% if language == "en" %}
+
+            🌾 Welcome,
+            <strong>{{ farmer_name }}</strong>!
+
+            <br>
+
+            Vethaimathi is here to support your farming journey 🌱
+
+        {% else %}
+
+            🌾 வணக்கம்,
+            <strong>{{ farmer_name }}</strong>!
+
+            <br>
+
+            உங்கள் விவசாய பயணத்திற்கு விதைமதி துணை நிற்கிறது 🌱
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- =========================================
+         MAIN FEATURE NAVIGATION
+    ========================================= -->
+
+    <div class="feature-section">
+
+        <h2>
+
+            {% if language == "en" %}
+
+                🌾 Farming Features
+
+            {% else %}
+
+                🌾 விவசாய அம்சங்கள்
+
+            {% endif %}
+
+        </h2>
+
+
+        <div class="feature-grid">
+
+
+            <!-- TAMIL / AI ASSISTANT -->
+
+            <a
+                href="/assistant"
+                class="feature-card"
+            >
+
+                <span class="feature-icon">
+                    🤖
+                </span>
+
+                <strong>
+
+                    {% if language == "en" %}
+
+                        AI Farming Assistant
+
+                    {% else %}
+
+                        தமிழ் விவசாய உதவியாளர்
+
+                    {% endif %}
+
+                </strong>
+
+            </a>
+
+
+
+            <!-- SMART AGRICULTURE PLANNER -->
+
+            <a
+                href="/planner"
+                class="feature-card"
+            >
+
+                <span class="feature-icon">
+                    🌾
+                </span>
+
+                <strong>
+
+                    {% if language == "en" %}
+
+                        Smart Agriculture Planner
+
+                    {% else %}
+
+                        ஸ்மார்ட் விவசாய திட்டமிடல்
+
+                    {% endif %}
+
+                </strong>
+
+            </a>
+
+
+
+            <!-- AI DISEASE DETECTION -->
+
+            <a
+                href="/disease"
+                class="feature-card"
+            >
+
+                <span class="feature-icon">
+                    🩺
+                </span>
+
+                <strong>
+
+                    {% if language == "en" %}
+
+                        AI Crop Disease Detection
+
+                    {% else %}
+
+                        AI பயிர் நோய் கண்டறிதல்
+
+                    {% endif %}
+
+                </strong>
+
+            </a>
+
+
+
+            <!-- OFFLINE AGRICULTURE GUIDE -->
+
+            <a
+                href="/offline-tips?lang={{ language }}"
+                class="feature-card"
+            >
+
+                <span class="feature-icon">
+                    📚
+                </span>
+
+                <strong>
+
+                    {% if language == "en" %}
+
+                        Offline Agriculture Guide
+
+                    {% else %}
+
+                        ஆஃப்லைன் விவசாய வழிகாட்டி
+
+                    {% endif %}
+
+                </strong>
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================
+         TODAY'S WEATHER
+    ========================================= -->
+
+    <div class="weather-card">
+
+        <h2>
+
+            {% if language == "en" %}
+
+                🌦️ Today's Weather
+
+            {% else %}
+
+                🌦️ இன்றைய வானிலை
+
+            {% endif %}
+
+        </h2>
+
+
+        <div class="weather-item">
+
+            <span>
+
+                {% if language == "en" %}
+                    🌡️ Temperature
+                {% else %}
+                    🌡️ வெப்பநிலை
+                {% endif %}
+
+            </span>
+
+            <strong>
+                {{ weather.temperature_2m }} °C
+            </strong>
+
+        </div>
+
+
+        <div class="weather-item">
+
+            <span>
+
+                {% if language == "en" %}
+                    💧 Humidity
+                {% else %}
+                    💧 ஈரப்பதம்
+                {% endif %}
+
+            </span>
+
+            <strong>
+                {{ weather.relative_humidity_2m }} %
+            </strong>
+
+        </div>
+
+
+        <div class="weather-item">
+
+            <span>
+
+                {% if language == "en" %}
+                    🌧️ Rainfall
+                {% else %}
+                    🌧️ மழைப்பொழிவு
+                {% endif %}
+
+            </span>
+
+            <strong>
+                {{ weather.precipitation }} mm
+            </strong>
+
+        </div>
+
+
+        <div class="weather-item">
+
+            <span>
+
+                {% if language == "en" %}
+                    💨 Wind Speed
+                {% else %}
+                    💨 காற்றின் வேகம்
+                {% endif %}
+
+            </span>
+
+            <strong>
+                {{ weather.wind_speed_10m }} km/h
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================
+         7 DAYS FORECAST
+    ========================================= -->
+
+    <div class="forecast-card">
+
+        <h2>
+
+            {% if language == "en" %}
+
+                📅 7-Day Forecast
+
+            {% else %}
+
+                📅 அடுத்த 7 நாட்கள்
+
+            {% endif %}
+
+        </h2>
+
+
+        {% for i in range(7) %}
+
+        <div class="forecast-item">
+
+            <strong>
+                {{ daily.time[i] }}
+            </strong>
+
+            <span>
+
+                🌡️
+                {{ daily.temperature_2m_max[i] }}°C
+                /
+                {{ daily.temperature_2m_min[i] }}°C
+
+            </span>
+
+            <span>
+
+                🌧️
+                {{ daily.precipitation_probability_max[i] }}%
+
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+
+    <!-- =========================================
+         AGRICULTURE ALERTS
+    ========================================= -->
+
+    <div class="alerts-card">
+
+        <h2>
+
+            {% if language == "en" %}
+
+                ⚠️ Farming Weather Alerts
+
+            {% else %}
+
+                ⚠️ விவசாய எச்சரிக்கைகள்
+
+            {% endif %}
+
+        </h2>
+
+
+        {% if alerts %}
+
+            {% for alert in alerts %}
+
+            <div class="alert-item">
+
+                <h3>
+                    {{ alert.title }}
+                </h3>
+
+                <p>
+                    {{ alert.message }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="no-alert">
+
+                {% if language == "en" %}
+
+                    ✅ No major weather alerts at the moment.
+
+                {% else %}
+
+                    ✅ தற்போது முக்கியமான
+                    வானிலை எச்சரிக்கைகள் இல்லை.
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+
+
+    <!-- =========================================
+         FARMING DECORATION
+    ========================================= -->
+
+    <div class="farm-decoration">
+
+        🌱 🌾 🌱 🌾 🌱
+
+    </div>
+
+
+</body>
+
+</html>
